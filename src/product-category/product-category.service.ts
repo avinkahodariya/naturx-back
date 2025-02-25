@@ -14,13 +14,13 @@ import {
 export class ProductCategoryService {
   constructor(
     @InjectModel(ProductCategory.name)
-    private productCategory: Model<ProductCategoryDocument>,
+    private productCategoryModel: Model<ProductCategoryDocument>,
   ) {}
 
   async createProductCategory(
     createProductCategoryDTO: CreateProductCategoryDTO,
   ): Promise<void> {
-    const newProductCategory = new this.productCategory(
+    const newProductCategory = new this.productCategoryModel(
       createProductCategoryDTO,
     );
     await newProductCategory.save();
@@ -31,18 +31,18 @@ export class ProductCategoryService {
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
 
-    const list = await this.productCategory
+    const list = await this.productCategoryModel
       .find(query)
       .skip(skip)
       .limit(limit)
       .exec();
-    const total = await this.productCategory.countDocuments(query).exec();
+    const total = await this.productCategoryModel.countDocuments(query).exec();
 
     return { list, total };
   }
 
   async getById(id: string): Promise<ProductCategory> {
-    const productCategory = await this.productCategory.findById(id).exec();
+    const productCategory = await this.productCategoryModel.findById(id).exec();
     if (!productCategory) {
       throw new BadRequestException('product not found');
     }
@@ -53,7 +53,7 @@ export class ProductCategoryService {
     id: string,
     updateData: UpdateProductCategoryDTO,
   ): Promise<void> {
-    const updatedProductCategory = await this.productCategory
+    const updatedProductCategory = await this.productCategoryModel
       .findByIdAndUpdate(id, { $set: updateData })
       .exec();
     if (!updatedProductCategory) {
@@ -62,7 +62,7 @@ export class ProductCategoryService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedProductCategory = await this.productCategory
+    const deletedProductCategory = await this.productCategoryModel
       .findByIdAndDelete(id)
       .exec();
     if (!deletedProductCategory) {

@@ -14,14 +14,16 @@ import {
   UserTokenSchema,
   Vehicle,
   VehicleSchema,
-  Event,
-  EventSchema,
-} from './schema';
-import { AppConfigModule, AppConfigService } from '@app/config';
-import {
+  Architect,
+  ArchitectSchema,
+  Area,
+  AreaSchema,
+  CustomerSource,
+  CustomerSourceSchema,
   ProductCategory,
   ProductCategorySchema,
-} from './schema/products-category.schema';
+} from './schema';
+import { AppConfigModule, AppConfigService } from '@app/config';
 
 @Global()
 @Module({
@@ -64,5 +66,12 @@ export const DBSchemas = {
   ]),
   productCategory: MongooseModule.forFeature([
     { name: ProductCategory.name, schema: ProductCategorySchema },
+  ]),
+  area: MongooseModule.forFeature([{ name: Area.name, schema: AreaSchema }]),
+  architect: MongooseModule.forFeature([
+    { name: Architect.name, schema: ArchitectSchema },
+  ]),
+  customerSource: MongooseModule.forFeature([
+    { name: CustomerSource.name, schema: CustomerSourceSchema },
   ]),
 };
