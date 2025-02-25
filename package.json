@@ -39,6 +39,7 @@
     "class-validator": "^0.14.1",
     "date-fns": "^4.1.0",
     "firebase-admin": "^13.0.0",
+    "module-alias": "^2.2.3",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.0",
     "nodemailer": "^6.9.16",
@@ -74,6 +75,12 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
+  },
+  "_moduleAliases": {
+    "@app/common-utils": "./libs/common-utils/src",
+    "@app/config": "./libs/config/src",
+    "@app/schema": "./libs/schema/src",
+    "@app/mail": "./libs/mail/src"
   },
   "jest": {
     "moduleFileExtensions": [
