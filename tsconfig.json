@@ -19,7 +19,6 @@
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
     "paths": {
-      "@app/*": ["libs/*"],
       "@app/common-utils": ["libs/common-utils/src"],
       "@app/common-utils/*": ["libs/common-utils/src/*"],
       "@app/config": ["libs/config/src"],
