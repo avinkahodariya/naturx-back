@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Request, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Request,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import {
@@ -8,7 +16,7 @@ import {
   RefreshDTO,
   RegisterDTO,
   ResetPasswordDTO,
-  VerifyTokenDTO
+  VerifyTokenDTO,
 } from './dto/auth';
 import { Public, User, SearchParamsDTO } from 'libs/schema/src';
 
@@ -16,9 +24,7 @@ import { Public, User, SearchParamsDTO } from 'libs/schema/src';
 @ApiBearerAuth()
 @ApiTags('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-  ) { }
+  constructor(private authService: AuthService) {}
 
   @Post('login')
   @Public()
@@ -58,6 +64,7 @@ export class AuthController {
 
   @Get('list')
   @HttpCode(200)
+  @Public()
   list(@Query() params: SearchParamsDTO): Promise<User[]> {
     return this.authService.list(params);
   }
@@ -77,17 +84,17 @@ export class AuthController {
     await this.authService.verifyResetToken(body.email, body.token);
   }
 
-
   @Post('reset-password')
   @Public()
   @HttpCode(200)
   @ApiOperation({ summary: 'Reset the password using a valid token' })
-  async resetPassword(@Body() resetPasswordData: ResetPasswordDTO): Promise<void> {
+  async resetPassword(
+    @Body() resetPasswordData: ResetPasswordDTO,
+  ): Promise<void> {
     await this.authService.resetPassword(
       resetPasswordData.email,
       resetPasswordData.token,
       resetPasswordData.newPassword,
     );
   }
-
 }
