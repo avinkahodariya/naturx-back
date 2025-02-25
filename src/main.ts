@@ -54,7 +54,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('swagger-api', app, document, customOptions);
   const port = configService.get('PORT') || 5100;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`http://localhost:${port}/swagger-api`);
 }
 bootstrap();
