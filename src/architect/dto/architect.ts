@@ -8,10 +8,10 @@ export class CreateArchitectDTO {
   isActive?: boolean;
 
   @ApiProperty({ description: '' })
-  whatsappNo?: boolean;
+  whatsappNo?: string;
 
   @ApiProperty({ description: '' })
-  contactNo?: boolean;
+  contactNo?: string;
 }
 
 export class UpdateArchitectDTO extends CreateArchitectDTO {}
