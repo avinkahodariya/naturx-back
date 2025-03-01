@@ -15,6 +15,7 @@ import {
   CreateProductCategoryDTO,
   UpdateProductCategoryDTO,
 } from './dto/product-category';
+import { SearchParamsDTO } from '@app/schema';
 
 @ApiBearerAuth()
 @Controller('product-category')
@@ -36,7 +37,7 @@ export class ProductCategoryController {
 
   @Get('')
   @HttpCode(200)
-  async get(@Query() params: any): Promise<any> {
+  async get(@Query() params: SearchParamsDTO): Promise<any> {
     return this.productCategoryService.get(params);
   }
 

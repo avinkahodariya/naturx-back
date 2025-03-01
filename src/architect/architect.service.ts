@@ -2,7 +2,12 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateArchitectDTO, UpdateArchitectDTO } from './dto/architect';
-import { Architect, ArchitectDocument, JwtUserPayload } from '@app/schema';
+import {
+  Architect,
+  ArchitectDocument,
+  JwtUserPayload,
+  SearchParamsDTO,
+} from '@app/schema';
 
 @Injectable()
 export class ArchitectService {
@@ -22,7 +27,7 @@ export class ArchitectService {
     await newArchitect.save();
   }
 
-  async get(params: any): Promise<any> {
+  async get(params: SearchParamsDTO): Promise<any> {
     const query: any = {};
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
@@ -56,7 +61,7 @@ export class ArchitectService {
 
   async delete(id: string): Promise<void> {
     const deletedArchitect = await this.architectModel
-      .findByIdAndDelete(id)
+      .findByIdAndUpdate(id, { isActive: false })
       .exec();
     if (!deletedArchitect) {
       throw new BadRequestException('Architect not found');

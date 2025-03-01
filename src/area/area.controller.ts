@@ -12,6 +12,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AreaService } from './area.service';
 import { CreateAreaDTO, UpdateAreaDTO } from './dto/area';
+import { SearchParamsDTO } from '@app/schema';
 
 @ApiBearerAuth()
 @Controller('area')
@@ -27,7 +28,7 @@ export class AreaController {
 
   @Get('')
   @HttpCode(200)
-  async get(@Query() params: any): Promise<any> {
+  async get(@Query() params: SearchParamsDTO): Promise<any> {
     return this.areaService.get(params);
   }
 

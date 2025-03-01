@@ -8,3 +8,4 @@ export * from './event.schema';
 
 export * from './products-category.schema';
 export * from './architect.schema';
+export * from './products.schema';

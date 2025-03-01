@@ -15,6 +15,7 @@ import {
   CreateCustomerSourceDTO,
   UpdateCustomerSourceDTO,
 } from './dto/customer-source';
+import { SearchParamsDTO } from '@app/schema';
 
 @ApiBearerAuth()
 @Controller('customer-source')
@@ -34,7 +35,7 @@ export class CustomerSourceController {
 
   @Get('')
   @HttpCode(200)
-  async get(@Query() params: any): Promise<any> {
+  async get(@Query() params: SearchParamsDTO): Promise<any> {
     return this.customerSourceService.get(params);
   }
 

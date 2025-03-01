@@ -9,6 +9,7 @@ import {
   CustomerSource,
   CustomerSourceDocument,
 } from '@app/schema/schema/products-category.schema';
+import { SearchParamsDTO } from '@app/schema';
 
 @Injectable()
 export class CustomerSourceService {
@@ -26,7 +27,7 @@ export class CustomerSourceService {
     await newCustomerSource.save();
   }
 
-  async get(params: any): Promise<any> {
+  async get(params: SearchParamsDTO): Promise<any> {
     const query: any = {};
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
@@ -60,7 +61,7 @@ export class CustomerSourceService {
 
   async delete(id: string): Promise<void> {
     const deletedCustomerSource = await this.customerSourceModal
-      .findByIdAndDelete(id)
+      .findByIdAndUpdate(id, { isActive: false })
       .exec();
     if (!deletedCustomerSource) {
       throw new BadRequestException('CustomerSource not found');

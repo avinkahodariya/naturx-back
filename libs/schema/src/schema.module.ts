@@ -22,6 +22,8 @@ import {
   CustomerSourceSchema,
   ProductCategory,
   ProductCategorySchema,
+  Products,
+  ProductsSchema,
 } from './schema';
 import { AppConfigModule, AppConfigService } from '@app/config';
 
@@ -73,5 +75,8 @@ export const DBSchemas = {
   ]),
   customerSource: MongooseModule.forFeature([
     { name: CustomerSource.name, schema: CustomerSourceSchema },
+  ]),
+  products: MongooseModule.forFeature([
+    { name: Products.name, schema: ProductsSchema },
   ]),
 };

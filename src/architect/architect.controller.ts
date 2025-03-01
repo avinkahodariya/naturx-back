@@ -13,7 +13,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ArchitectService } from './architect.service';
 import { CreateArchitectDTO, UpdateArchitectDTO } from './dto/architect';
-import { JwtUserPayload } from '@app/schema';
+import { JwtUserPayload, SearchParamsDTO } from '@app/schema';
 
 @ApiBearerAuth()
 @Controller('architect')
@@ -32,7 +32,7 @@ export class ArchitectController {
 
   @Get('')
   @HttpCode(200)
-  async get(@Query() params: any): Promise<any> {
+  async get(@Query() params: SearchParamsDTO): Promise<any> {
     return this.architectService.get(params);
   }
 

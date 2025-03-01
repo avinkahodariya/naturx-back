@@ -9,6 +9,7 @@ import {
   ProductCategory,
   ProductCategoryDocument,
 } from '@app/schema/schema/products-category.schema';
+import { SearchParamsDTO } from '@app/schema';
 
 @Injectable()
 export class ProductCategoryService {
@@ -26,7 +27,7 @@ export class ProductCategoryService {
     await newProductCategory.save();
   }
 
-  async get(params: any): Promise<any> {
+  async get(params: SearchParamsDTO): Promise<any> {
     const query: any = {};
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
@@ -63,7 +64,7 @@ export class ProductCategoryService {
 
   async delete(id: string): Promise<void> {
     const deletedProductCategory = await this.productCategoryModel
-      .findByIdAndDelete(id)
+      .findByIdAndUpdate(id, { isActive: false })
       .exec();
     if (!deletedProductCategory) {
       throw new BadRequestException('ProductCategory not found');
