@@ -6,14 +6,10 @@ import {
   AWSSchemaSchema,
   OtherDomain,
   OtherDomainSchema,
-  Property,
-  PropertySchema,
   User,
   UserSchema,
   UserToken,
   UserTokenSchema,
-  Vehicle,
-  VehicleSchema,
   Architect,
   ArchitectSchema,
   Area,
@@ -24,6 +20,8 @@ import {
   ProductCategorySchema,
   Products,
   ProductsSchema,
+  Customer,
+  CustomerSchema,
 } from './schema';
 import { AppConfigModule, AppConfigService } from '@app/config';
 
@@ -54,12 +52,6 @@ export const DBSchemas = {
   userToken: MongooseModule.forFeature([
     { name: UserToken.name, schema: UserTokenSchema },
   ]),
-  vehicle: MongooseModule.forFeature([
-    { name: Vehicle.name, schema: VehicleSchema },
-  ]),
-  property: MongooseModule.forFeature([
-    { name: Property.name, schema: PropertySchema },
-  ]),
   otherdomain: MongooseModule.forFeature([
     { name: OtherDomain.name, schema: OtherDomainSchema },
   ]),
@@ -78,5 +70,8 @@ export const DBSchemas = {
   ]),
   products: MongooseModule.forFeature([
     { name: Products.name, schema: ProductsSchema },
+  ]),
+  customer: MongooseModule.forFeature([
+    { name: Customer.name, schema: CustomerSchema },
   ]),
 };

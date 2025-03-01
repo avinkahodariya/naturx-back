@@ -26,8 +26,8 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('Good PR')
-    .setDescription('Good PR API description')
+    .setTitle('Nature-X')
+    .setDescription('Nature-X API description')
     .setVersion('1.1')
     .addBearerAuth()
     // .addTag('users')
@@ -49,7 +49,7 @@ async function bootstrap() {
       persistAuthorization: true,
       tryItOutEnabled: false,
     },
-    customSiteTitle: 'Good PR',
+    customSiteTitle: 'Nature-X',
   };
 
   SwaggerModule.setup('swagger-api', app, document, customOptions);

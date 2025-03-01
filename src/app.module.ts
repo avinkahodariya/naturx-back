@@ -1,6 +1,6 @@
 import { CommonUtilsModule } from '@app/common-utils';
 import { AppConfigModule } from '@app/config';
-import { OtherDomain, SchemaModule } from '@app/schema';
+import { SchemaModule } from '@app/schema';
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
@@ -11,6 +11,7 @@ import { AreaModule } from './area/area.module';
 import { CustomerSourceModule } from './customer-source/customer-source.module';
 import { ArchitectModule } from './architect/architect.module';
 import { ProductModule } from './products/products.module';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProductModule } from './products/products.module';
     CustomerSourceModule,
     ProductCategoryModule,
     ProductModule,
+    CustomerModule,
   ],
   controllers: [],
   providers: [],

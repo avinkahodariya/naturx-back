@@ -4,7 +4,8 @@ import { Types } from 'mongoose';
 
 export enum UserRoles {
   Admin = 'admin',
-  User = "user"
+  User = 'user',
+  Customer = 'customer',
 }
 
 export type ID = Types.ObjectId;
