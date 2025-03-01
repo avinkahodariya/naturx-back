@@ -8,3 +8,4 @@ export * from './products-category.schema';
 export * from './architect.schema';
 export * from './products.schema';
 export * from './customer.schema';
+export * from './quotation.schema';
