@@ -9,3 +9,4 @@ export * from './architect.schema';
 export * from './products.schema';
 export * from './customer.schema';
 export * from './quotation.schema';
+export * from './quotation-items.schema';

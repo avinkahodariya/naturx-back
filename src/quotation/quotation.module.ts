@@ -4,7 +4,7 @@ import { QuotationController } from './quotation.controller';
 import { DBSchemas } from '@app/schema';
 
 @Module({
-  imports: [DBSchemas.quotation],
+  imports: [DBSchemas.quotation, DBSchemas.quotationItem],
   controllers: [QuotationController],
   providers: [QuotationService],
 })

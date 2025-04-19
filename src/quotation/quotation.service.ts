@@ -1,96 +1,171 @@
+// quotation.service.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateQuotationDTO, UpdateQuotationDTO } from './dto/quotation';
 import {
-  QuotationDocument,
-  SearchParamsDTO,
   Quotation,
+  QuotationDocument,
+  QuotationItem,
+  QuotationItemDocument,
   JwtUserPayload,
+  SearchParamsDTO,
 } from '@app/schema';
+import { CreateQuotationDTO, UpdateQuotationDTO } from './dto/quotation';
 
 @Injectable()
 export class QuotationService {
   constructor(
     @InjectModel(Quotation.name)
-    private quotationModel: Model<QuotationDocument>,
+    private readonly quotationModel: Model<QuotationDocument>,
+
+    // ←— Inject the item model
+    @InjectModel(QuotationItem.name)
+    private readonly quotationItemModel: Model<QuotationItemDocument>,
   ) {}
 
+  /** CREATE: first make the quotation, then its items, then link them */
   async createQuotation(
-    createQuotationDTO: CreateQuotationDTO,
+    dto: CreateQuotationDTO,
     user: JwtUserPayload,
-  ): Promise<void> {
-    const newQuotation = new this.quotationModel({
-      ...createQuotationDTO,
-      area: new Types.ObjectId(createQuotationDTO.area),
-      product: new Types.ObjectId(createQuotationDTO.product),
-      category: new Types.ObjectId(createQuotationDTO.category),
+  ): Promise<Quotation> {
+    const { quotationItems: itemsIn, ...quotationFields } = dto;
+    const count: number = await this.quotationModel.countDocuments({}).exec();
+    // 1) create the quotation
+    const quotation = new this.quotationModel({
+      ...quotationFields,
       createdBy: new Types.ObjectId(user.id),
+      quotationId: `QUO-${count + 1}`,
     });
+    await quotation.save();
 
-    await newQuotation.save();
+    // 2) if there are items, create & link them
+    if (itemsIn?.length) {
+      const createdItems = await Promise.all(
+        itemsIn.map((itemDto) => {
+          return new this.quotationItemModel({
+            ...itemDto,
+            createdBy: new Types.ObjectId(user.id),
+            // assuming you want to track parent
+            quotation: quotation._id,
+          }).save();
+        }),
+      );
+      quotation.quotationItems = createdItems.map((i) => i._id);
+      await quotation.save();
+    }
+
+    return quotation.populate('quotationItems');
   }
 
-  async get(params: SearchParamsDTO): Promise<any> {
-    const query: any = {};
-    const skip = params.page * params.limit || 0;
-    const limit = params.limit || 100;
+  /** READ (list) */
+  async findAll(
+    params: SearchParamsDTO,
+  ): Promise<{ list: Quotation[]; total: number }> {
+    const skip = (params.page ?? 0) * (params.limit ?? 100);
+    const limit = params.limit ?? 100;
 
-    const list = await this.quotationModel
-      .find(query)
-      .populate({ path: 'category', select: '_id name' })
-      .populate({ path: 'product', select: '_id name' })
-      .skip(skip)
-      .limit(limit)
-      .exec();
-    const total = await this.quotationModel.countDocuments(query).exec();
+    const query = { isActive: true };
+    const [list, total] = await Promise.all([
+      this.quotationModel
+        .find(query)
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: 'quotationItems',
+          populate: [
+            { path: 'category', model: 'ProductCategory' }, // Populate the category field
+            { path: 'area', model: 'Area' }, // Populate the area field
+            { path: 'product', model: 'Products' }, // Populate the product field
+          ],
+        })
+        .exec(),
+      this.quotationModel.countDocuments(query).exec(),
+    ]);
 
     return { list, total };
   }
 
-  async getById(id: string): Promise<Quotation> {
-    const quotation = await this.quotationModel.findById(id).exec();
-    if (!quotation) {
-      throw new BadRequestException('product not found');
-    }
-    return quotation;
+  /** READ (single) */
+  async findOne(id: string): Promise<Quotation> {
+    const q = await this.quotationModel
+      .findById(id)
+      .populate({
+        path: 'quotationItems',
+        populate: [
+          { path: 'category', model: 'ProductCategory' }, // Populate the category field
+          { path: 'area', model: 'Area' }, // Populate the area field
+          { path: 'product', model: 'Products' }, // Populate the product field
+        ],
+      })
+      .exec();
+    if (!q) throw new BadRequestException('Quotation not found');
+    return q;
   }
 
-  async update(id: string, updateData: UpdateQuotationDTO): Promise<void> {
+  /** UPDATE: basic fields + reconcile items if provided */
+  async update(id: string, dto: UpdateQuotationDTO): Promise<Quotation> {
     const existing = await this.quotationModel.findById(id);
-    if (!existing) {
-      throw new BadRequestException('Product not found');
+    if (!existing) throw new BadRequestException('Quotation not found');
+
+    const { quotationItems: itemsIn, ...fieldsToSet } = dto;
+
+    // 1) update core quotation fields
+    Object.assign(existing, fieldsToSet);
+    await existing.save();
+
+    // 2) if items array is passed, upsert them
+    if (itemsIn) {
+      // Step 1: Update existing items
+      await Promise.all(
+        itemsIn.map(async (itemDto) => {
+          const existingItem = existing.quotationItems.find(
+            (itemId) => itemId.toString() === itemDto._id.toString(),
+          );
+
+          if (existingItem) {
+            // If the item exists, update it
+            await this.quotationItemModel.findByIdAndUpdate(existingItem, {
+              ...itemDto,
+              updatedAt: new Date(),
+            });
+          } else {
+            // If the item doesn't exist, create a new item
+            const newItem = new this.quotationItemModel({
+              ...itemDto,
+              createdBy: existing.createdBy,
+              quotation: existing._id,
+            });
+            await newItem.save();
+            existing.quotationItems.push(newItem._id);
+          }
+        }),
+      );
+
+      // Save the quotation with updated items
+      await existing.save();
     }
 
-    const updatedProduct = await this.quotationModel
-      .findByIdAndUpdate(
-        id,
-        {
-          $set: {
-            ...updateData,
-            category: updateData.category
-              ? new Types.ObjectId(updateData.category as unknown as string)
-              : existing.category,
-            area: updateData.area
-              ? new Types.ObjectId(updateData.area as unknown as string)
-              : existing.area,
-          },
-        },
-        { new: true },
-      )
-      .exec();
-
-    if (!updatedProduct) {
-      throw new BadRequestException('Product not found');
-    }
+    // Return the updated quotation populated with the quotation items
+    return existing.populate('quotationItems');
   }
 
-  async delete(id: string): Promise<void> {
-    const deletedQuotation = await this.quotationModel
-      .findByIdAndUpdate(id, { isActive: false })
-      .exec();
-    if (!deletedQuotation) {
-      throw new BadRequestException('Quotation not found');
-    }
+  /** DELETE: soft‑delete quotation & its items */
+  async remove(id: string): Promise<void> {
+    const quotation = await this.quotationModel.findById(id);
+    if (!quotation) throw new BadRequestException('Quotation not found');
+
+    // soft‑delete quotation itself
+    quotation.isActive = false;
+    await quotation.save();
+
+    // soft‑delete all linked items
+    await this.quotationItemModel.updateMany(
+      { _id: { $in: quotation.quotationItems } },
+      { isActive: false },
+    );
+  }
+
+  async removeQuotationItem(quotationId: string, id: string): Promise<void> {
+    await this.quotationItemModel.findByIdAndUpdate(id, { isActive: false });
   }
 }
