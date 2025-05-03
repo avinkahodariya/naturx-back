@@ -13,6 +13,7 @@ import { ArchitectModule } from './architect/architect.module';
 import { ProductModule } from './products/products.module';
 import { CustomerModule } from './customer/customer.module';
 import { QuotationModule } from './quotation/quotation.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { QuotationModule } from './quotation/quotation.module';
     ProductModule,
     CustomerModule,
     QuotationModule,
+    CompanyModule,
   ],
   controllers: [],
   providers: [],

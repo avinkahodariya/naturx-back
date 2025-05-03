@@ -58,7 +58,13 @@ export class CustomerService {
     const query: any = {};
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
-
+    if (params.isActive) {
+      query.isActive = params.isActive;
+    }
+    if (params.search) {
+      const regex = new RegExp(params.search, 'i');
+      query.$or = [{ name: regex }, { contactNo: regex }];
+    }
     const list = await this.customerModel
       .find(query)
       .skip(skip)

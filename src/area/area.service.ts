@@ -24,7 +24,13 @@ export class AreaService {
     const query: any = {};
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
-
+    if (params.search) {
+      const regex = new RegExp(params.search, 'i');
+      query.$or = [{ name: regex }];
+    }
+    if (params.isActive) {
+      query.isActive = params.isActive;
+    }
     const list = await this.areaModel
       .find(query)
       .skip(skip)

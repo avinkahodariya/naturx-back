@@ -200,6 +200,14 @@ export class CreateQuotationDTO {
   @IsString()
   name: string;
 
+  @ApiProperty({
+    example: '60f7f8a2b7123c001ce4d1e7',
+    description: 'Customer id for this quotation',
+  })
+  @IsNotEmpty()
+  @IsString()
+  customerId: string;
+
   @ApiPropertyOptional({
     enum: QuotationStatus,
     example: QuotationStatus.PENDING,

@@ -49,7 +49,13 @@ export class ProductsService {
     const query: any = {};
     const skip = params.page * params.limit || 0;
     const limit = params.limit || 100;
-
+    if (params.isActive) {
+      query.isActive = params.isActive;
+    }
+    if (params.search) {
+      const regex = new RegExp(params.search, 'i');
+      query.$or = [{ name: regex }];
+    }
     const list = await this.productsModel
       .find(query)
       .skip(skip)
@@ -116,7 +122,7 @@ export class ProductsService {
 
   async delete(id: string): Promise<void> {
     const deletedProducts = await this.productsModel
-      .findByIdAndUpdate(id, { isActive: false })
+      .findByIdAndDelete(id)
       .exec();
     if (!deletedProducts) {
       throw new BadRequestException('Products not found');

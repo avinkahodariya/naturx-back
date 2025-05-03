@@ -3,6 +3,7 @@ import { ID } from '../dto';
 import { HydratedDocument, Schema as mSchema } from 'mongoose';
 import { User } from './user.schema';
 import { QuotationItem } from './quotation-items.schema';
+import { Customer } from './customer.schema';
 
 export enum QuotationStatus {
   ACCEPTED = 1,
@@ -22,6 +23,9 @@ export class Quotation {
 
   @Prop({ required: true, default: true, type: Boolean })
   isActive: boolean;
+
+  @Prop({ type: mSchema.Types.ObjectId, ref: 'Customer' })
+  customerId: ID | Customer;
 
   @Prop({
     type: String,

@@ -1,4 +1,4 @@
-import { Global, Module, Post } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import {
@@ -26,6 +26,8 @@ import {
   QuotationSchema,
   QuotationItem,
   QuotationItemSchema,
+  Company,
+  CompanySchema,
 } from './schema';
 import { AppConfigModule, AppConfigService } from '@app/config';
 
@@ -83,5 +85,8 @@ export const DBSchemas = {
   ]),
   quotationItem: MongooseModule.forFeature([
     { name: QuotationItem.name, schema: QuotationItemSchema },
+  ]),
+  company: MongooseModule.forFeature([
+    { name: Company.name, schema: CompanySchema },
   ]),
 };
